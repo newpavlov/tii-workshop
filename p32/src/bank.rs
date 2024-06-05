@@ -68,7 +68,7 @@ impl Bank {
         Self { users, name, credit_interest, debit_interest }
     }
     pub(crate) fn get_user_by_id(&self, user_id: String) -> Option<&User> {
-        for (index, user) in self.users.iter().enumerate() {
+        for user in self.users.iter() {
             if user.name == user_id {
                 return Some(&user);
             }
