@@ -29,18 +29,17 @@ impl User {
     }
 }
 
-impl Balance for User {
-    fn balance(self: &Self) -> i64 {
-        self.balance
-    }
-
+impl MaxCredit for User {
     fn max_credit(self: &Self) -> u64 {
         self.balance as u64 + self.credit_line
     }
 }
 
 trait Balance {
-    fn balance(self: &Self) -> i64;
+    fn balance(self: &Self) -> (u64, i64);
+}
+
+trait MaxCredit {
     fn max_credit(self: &Self) -> u64;
 }
 
@@ -53,12 +52,10 @@ pub struct Bank {
 }
 
 impl Balance for Bank {
-    fn balance(self: &Self) -> i64 {
-        return self.users.iter().map(|user| user.balance()).sum();
-    }
-
-    fn max_credit(self: &Self) -> u64 {
-        return self.users.iter().map(|user| user.max_credit()).sum();
+    fn balance(self: &Self) -> (u64, i64) {
+        let total_assets = self.users.iter().map(|user| user.get_balance()).sum();
+        let total_liabilities = self.users.iter().map(|user| user.credit_line).sum();
+        return (total_liabilities, total_assets);
     }
 }
 
@@ -174,15 +171,6 @@ mod tests_bank {
     // – transfer_funds: accepts two user names and transfer amount as positive integer. Transfers the specified amount from one user to another. Returns an error, if its can not be done (e.g. if the origin user hit his credit limit).
     // – accrue_interest: update user balances according to bank’s interest rates on credit and debit.
     #[test]
-    fn calculate_balance_of_the_user() {
-        let user1 = User::new("John".to_string(), 100, 1);
-
-        let total_balance = user1.balance();
-
-        assert_eq!(total_balance, 1);
-    }
-
-    #[test]
     fn calculate_balance_of_the_bank() {
         let user1 = User::new("John1".to_string(), 100, 1);
         let user2 = User::new("John".to_string(), 1, 90);
@@ -190,7 +178,8 @@ mod tests_bank {
 
         let total_balance = bank.balance();
 
-        assert_eq!(total_balance, 1 + 90);
+        assert_eq!(total_balance.1, 1 + 90);
+        assert_eq!(total_balance.0, 100 + 1);
     }
 
     #[test]
@@ -202,8 +191,8 @@ mod tests_bank {
         let result = bank.transfer("user1", "user2", 2);
 
         assert_eq!(result, true);
-        assert_eq!(bank.get_user_by_id("user1".to_string()).unwrap().balance(), -1);
-        assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance(), 92);
+        assert_eq!(bank.get_user_by_id("user1".to_string()).unwrap().balance, -1);
+        assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance, 92);
     }
 
     #[test]
@@ -215,8 +204,8 @@ mod tests_bank {
         let result = bank.transfer("user1", "user2", 2);
 
         assert_eq!(result, false);
-        assert_eq!(bank.get_user_by_id("user1".to_string()).unwrap().balance(), 1);
-        assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance(), 90);
+        assert_eq!(bank.get_user_by_id("user1".to_string()).unwrap().balance, 1);
+        assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance, 90);
     }
 
     #[test]
@@ -227,7 +216,7 @@ mod tests_bank {
         let result = bank.transfer("NON_EXISTING", "user2", 2);
 
         assert_eq!(result, false);
-        assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance(), 1);
+        assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance, 1);
     }
 
     #[test]
@@ -238,6 +227,6 @@ mod tests_bank {
         let result = bank.transfer("user2", "NON_EXISTING", 2);
 
         assert_eq!(result, false);
-        assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance(), 1);
+        assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance, 1);
     }
 }
