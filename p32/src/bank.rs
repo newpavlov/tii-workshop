@@ -78,6 +78,9 @@ impl Bank {
         return None;
     }
     pub(crate) fn transfer(&mut self, origin_username: &str, destination_username: &str, amount: i64) -> bool {
+        if amount < 0 {
+            return false;
+        }
         let mut maybe_origin_index = None;
         let mut maybe_destination_index = None;
         // let users_iter_mut = self.users.iter_mut();
@@ -258,6 +261,19 @@ mod tests_bank {
 
         assert_eq!(result, false);
         assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance, 1);
+    }
+
+    #[test]
+    fn transfer_funds_amount_cannot_be_negative() {
+        let user1 = User::new("user1".to_string(), 10, 1);
+        let user2 = User::new("user2".to_string(), 1, 90);
+        let mut bank = Bank::new(vec![user1, user2], "First Bank".to_string(), 1, 4);
+
+        let result = bank.transfer("user1", "user2", -2);
+
+        assert_eq!(result, false);
+        assert_eq!(bank.get_user_by_id("user1".to_string()).unwrap().balance, 1);
+        assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance, 90);
     }
 
     #[test]
