@@ -1,5 +1,3 @@
-use std::ptr::null;
-
 #[derive(Debug, PartialEq)]
 pub struct User {
     name: String,
@@ -36,7 +34,7 @@ impl MaxCredit for User {
 }
 
 trait Balance {
-    fn balance(self: &Self) -> (u64, i64);
+    fn balance(self: &Self) -> BalanceSheet;
 }
 
 trait MaxCredit {
@@ -51,11 +49,16 @@ pub struct Bank {
     debit_interest: u64,
 }
 
+pub struct BalanceSheet {
+    liabilities: u64,
+    assets: i64,
+}
+
 impl Balance for Bank {
-    fn balance(self: &Self) -> (u64, i64) {
+    fn balance(self: &Self) -> BalanceSheet {
         let total_assets = self.users.iter().map(|user| user.get_balance()).sum();
         let total_liabilities = self.users.iter().map(|user| user.credit_line).sum();
-        return (total_liabilities, total_assets);
+        return BalanceSheet { assets: total_assets, liabilities: total_liabilities };
     }
 }
 
@@ -178,8 +181,8 @@ mod tests_bank {
 
         let total_balance = bank.balance();
 
-        assert_eq!(total_balance.1, 1 + 90);
-        assert_eq!(total_balance.0, 100 + 1);
+        assert_eq!(total_balance.assets, 1 + 90);
+        assert_eq!(total_balance.liabilities, 100 + 1);
     }
 
     #[test]
