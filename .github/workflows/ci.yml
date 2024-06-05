@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_VERSION_STABLE: 1.78.0
+
+jobs:
+
+  test:
+    runs-on: ubuntu-21.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ env.RUST_VERSION_STABLE }}
+          profile: minimal
+          override: true
+      - name: Build
+        run: cargo build --all-targets
+      - name: Test
+        run: cargo test
