@@ -140,7 +140,7 @@ impl Bank {
             }
 
             {
-                let credit_interest = ((user.credit_line * self.credit_interest) / 100);
+                let credit_interest = (user.credit_line * self.credit_interest) / 100;
                 let new_credit_line = user.credit_line + credit_interest;
                 user.credit_line = new_credit_line;
             }
