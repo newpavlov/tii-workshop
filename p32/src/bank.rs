@@ -105,6 +105,7 @@ impl Bank {
         let (first_index, second_index) = match (first_user_index, second_user_index) {
             (Some(first_index), Some(second_index)) => { (first_index, second_index) }
             (_, Some(_)) => { return false; }
+            (Some(_), _) => { return false; }
             _ => todo!()
         };
 
@@ -220,6 +221,17 @@ mod tests {
         let mut bank = Bank::new(vec![user2], "First Bank".to_string(), 1, 4);
 
         let result = bank.transfer("NON_EXISTING", "user2", 2);
+
+        assert_eq!(result, false);
+        assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance(), 1);
+    }
+
+    #[test]
+    fn transfer_funds_destination_user_does_not_exist() {
+        let user2 = User::new("user2".to_string(), 0, 1);
+        let mut bank = Bank::new(vec![user2], "First Bank".to_string(), 1, 4);
+
+        let result = bank.transfer("user2", "NON_EXISTING", 2);
 
         assert_eq!(result, false);
         assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance(), 1);
