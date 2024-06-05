@@ -4,12 +4,12 @@ fn main() {
 
 fn celsius2farenheit(celsius: i32) -> i32 {
     // Careful with https://rust-lang.github.io/rust-clippy/master/index.html#/identity_op
-    return ((celsius * 9) / 5) + 32;
+    ((celsius * 9) / 5) + 32
 }
 
 fn farenheit2celsius(farenheit: i32) -> i32 {
     // Careful with https://rust-lang.github.io/rust-clippy/master/index.html#/identity_op
-    return (5 * (farenheit - 32)) / 9;
+    (5 * (farenheit - 32)) / 9
 }
 
 #[cfg(test)]
