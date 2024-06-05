@@ -6,6 +6,7 @@ pub struct User {
 }
 
 impl User {
+    // type of name?
     pub fn new(name: String, credit_line: u64, balance: i64) -> Self {
         Self { name, credit_line, balance }
     }
