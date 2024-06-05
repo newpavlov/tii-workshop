@@ -91,7 +91,6 @@ impl Bank {
                 break;
             }
         }
-        assert!(first_user_index.is_some() && second_user_index.is_some());
 
 
         // let both_users_exist = users_iter_mut.filter(|user| user.name == origin_username || user.name == destination_username).count() == 2;
@@ -105,7 +104,8 @@ impl Bank {
 
         let (first_index, second_index) = match (first_user_index, second_user_index) {
             (Some(first_index), Some(second_index)) => { (first_index, second_index) }
-            _ => todo!(),
+            (_, Some(_)) => { return false; }
+            _ => todo!()
         };
 
         let has_credit_limit = self.users[first_index].max_credit() >= amount as u64;
@@ -212,5 +212,16 @@ mod tests {
         assert_eq!(result, false);
         assert_eq!(bank.get_user_by_id("user1".to_string()).unwrap().balance(), 1);
         assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance(), 90);
+    }
+
+    #[test]
+    fn transfer_funds_origin_user_does_not_exist() {
+        let user2 = User::new("user2".to_string(), 0, 1);
+        let mut bank = Bank::new(vec![user2], "First Bank".to_string(), 1, 4);
+
+        let result = bank.transfer("NON_EXISTING", "user2", 2);
+
+        assert_eq!(result, false);
+        assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance(), 1);
     }
 }
