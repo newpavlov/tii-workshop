@@ -33,10 +33,15 @@ impl Balance for User {
     fn balance(self: &Self) -> i64 {
         self.balance
     }
+
+    fn max_credit(self: &Self) -> u64 {
+        self.balance as u64 + self.credit_line
+    }
 }
 
 trait Balance {
     fn balance(self: &Self) -> i64;
+    fn max_credit(self: &Self) -> u64;
 }
 
 #[derive(Debug, PartialEq)]
@@ -50,6 +55,10 @@ pub struct Bank {
 impl Balance for Bank {
     fn balance(self: &Self) -> i64 {
         return self.users.iter().map(|user| user.balance()).sum();
+    }
+
+    fn max_credit(self: &Self) -> u64 {
+        return self.users.iter().map(|user| user.max_credit()).sum();
     }
 }
 
@@ -84,6 +93,7 @@ impl Bank {
         }
         assert!(first_user_index.is_some() && second_user_index.is_some());
 
+
         // let both_users_exist = users_iter_mut.filter(|user| user.name == origin_username || user.name == destination_username).count() == 2;
         // first_user_exists = users_iter_mut(|user| user.name == origin_username).count() == 1;
         // let users_iter_mut = self.users.iter_mut();
@@ -97,6 +107,12 @@ impl Bank {
             (Some(first_index), Some(second_index)) => { (first_index, second_index) }
             _ => todo!(),
         };
+
+        let has_credit_limit = self.users[first_index].max_credit() >= amount as u64;
+        if !has_credit_limit {
+            return false;
+        }
+
 
         {
             let new_balance = self.users[first_index].get_balance() - amount;
@@ -183,5 +199,18 @@ mod tests {
         assert_eq!(result, true);
         assert_eq!(bank.get_user_by_id("user1".to_string()).unwrap().balance(), -1);
         assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance(), 92);
+    }
+
+    #[test]
+    fn transfer_funds_credit_limit_exceeded() {
+        let user1 = User::new("user1".to_string(), 0, 1);
+        let user2 = User::new("user2".to_string(), 1, 90);
+        let mut bank = Bank::new(vec![user1, user2], "First Bank".to_string(), 1, 4);
+
+        let result = bank.transfer("user1", "user2", 2);
+
+        assert_eq!(result, false);
+        assert_eq!(bank.get_user_by_id("user1".to_string()).unwrap().balance(), 1);
+        assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance(), 90);
     }
 }
