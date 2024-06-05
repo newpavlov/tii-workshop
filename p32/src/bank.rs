@@ -29,7 +29,7 @@ impl User {
 
 impl Balance for User {
     fn balance(self: &Self) -> i64 {
-        self.balance - self.credit_line as i64
+        self.balance
     }
 }
 
@@ -102,7 +102,7 @@ mod tests {
 
         let total_balance = user1.balance();
 
-        assert_eq!(total_balance, (1 - 100));
+        assert_eq!(total_balance, 1);
     }
 
     #[test]
@@ -113,6 +113,6 @@ mod tests {
 
         let total_balance = bank.balance();
 
-        assert_eq!(total_balance, (1 - 100) + (90 - 1));
+        assert_eq!(total_balance, 1 + 90);
     }
 }
