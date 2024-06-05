@@ -104,9 +104,8 @@ impl Bank {
 
         let (first_index, second_index) = match (first_user_index, second_user_index) {
             (Some(first_index), Some(second_index)) => { (first_index, second_index) }
-            (_, Some(_)) => { return false; }
-            (Some(_), _) => { return false; }
-            _ => todo!()
+            (None, _) => { return false; }
+            (_, None) => { return false; }
         };
 
         let has_credit_limit = self.users[first_index].max_credit() >= amount as u64;
