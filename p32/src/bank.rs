@@ -78,18 +78,18 @@ impl Bank {
         return None;
     }
     pub(crate) fn transfer(&mut self, origin_username: &str, destination_username: &str, amount: i64) -> bool {
-        let mut first_user_index = None;
-        let mut second_user_index = None;
+        let mut maybe_origin_index = None;
+        let mut maybe_destination_index = None;
         // let users_iter_mut = self.users.iter_mut();
         // let both_users_exist = users_iter_mut.filter(|user| user.name == origin_username || user.name == destination_username).count() == 2;
         for (index, user) in self.users.iter().enumerate() {
             if user.name == origin_username {
-                first_user_index = Some(index);
+                maybe_origin_index = Some(index);
             }
             if user.name == destination_username {
-                second_user_index = Some(index);
+                maybe_destination_index = Some(index);
             }
-            if first_user_index.is_some() && second_user_index.is_some() {
+            if maybe_origin_index.is_some() && maybe_destination_index.is_some() {
                 break;
             }
         }
@@ -104,25 +104,25 @@ impl Bank {
         // first_user.set_balance(first_user.get_balance() - amount);
         // self.users[second_user_exists_index as usize].set_balance(self.users[second_user_exists_index as usize].get_balance() + amount);
 
-        let (first_index, second_index) = match (first_user_index, second_user_index) {
-            (Some(first_index), Some(second_index)) => { (first_index, second_index) }
+        let (origin_index, destination_index) = match (maybe_origin_index, maybe_destination_index) {
+            (Some(origin_index), Some(destination_index)) => { (origin_index, destination_index) }
             (None, _) => { return false; }
             (_, None) => { return false; }
         };
 
-        let has_credit_limit = self.users[first_index].max_credit() >= amount as u64;
+        let has_credit_limit = self.users[origin_index].max_credit() >= amount as u64;
         if !has_credit_limit {
             return false;
         }
 
 
         {
-            let new_balance = self.users[first_index].get_balance() - amount;
-            self.users[first_index].set_balance(new_balance);
+            let origin_balance = self.users[origin_index].get_balance() - amount;
+            self.users[origin_index].set_balance(origin_balance);
         }
         {
-            let new_balance_2 = self.users[second_index].get_balance() + amount;
-            self.users[second_index].set_balance(new_balance_2);
+            let destination_balance = self.users[destination_index].get_balance() + amount;
+            self.users[destination_index].set_balance(destination_balance);
         }
 
         // self.users[first_user_index.unwrap()]
