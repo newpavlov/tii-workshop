@@ -132,7 +132,7 @@ impl Bank {
     }
 
     pub(crate) fn accrue_interest(&mut self) -> bool {
-        for mut user in self.users.iter_mut() {
+        for user in self.users.iter_mut() {
             {
                 let debit_interest = ((user.balance as u64 * self.debit_interest) / 100) as i64;
                 let new_balance = user.balance + debit_interest;
