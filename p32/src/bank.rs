@@ -6,16 +6,16 @@ pub struct User {
 }
 
 trait Balanceable {
-    fn get_balance(self: &Self) -> i64;
-    fn set_balance(self: &mut Self, value: i64);
+    fn get_balance(&self) -> i64;
+    fn set_balance(&mut self, value: i64);
 }
 
 impl Balanceable for User {
-    fn get_balance(self: &Self) -> i64 {
+    fn get_balance(&self) -> i64 {
         self.balance
     }
 
-    fn set_balance(self: &mut Self, value: i64) {
+    fn set_balance(&mut self, value: i64) {
         self.balance = value
     }
 }
@@ -28,17 +28,17 @@ impl User {
 }
 
 impl MaxCredit for User {
-    fn max_credit(self: &Self) -> u64 {
+    fn max_credit(&self) -> u64 {
         self.balance as u64 + self.credit_line
     }
 }
 
 trait Balance {
-    fn balance(self: &Self) -> BalanceSheet;
+    fn balance(&self) -> BalanceSheet;
 }
 
 trait MaxCredit {
-    fn max_credit(self: &Self) -> u64;
+    fn max_credit(&self) -> u64;
 }
 
 #[derive(Debug, PartialEq)]
@@ -57,7 +57,7 @@ pub struct BalanceSheet {
 }
 
 impl Balance for Bank {
-    fn balance(self: &Self) -> BalanceSheet {
+    fn balance(&self) -> BalanceSheet {
         let total_assets = self.users.iter().map(|user| user.get_balance()).sum();
         let total_liabilities = self.users.iter().map(|user| user.credit_line).sum();
         return BalanceSheet { assets: total_assets, liabilities: total_liabilities };
