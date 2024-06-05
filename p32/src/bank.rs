@@ -154,7 +154,7 @@ mod tests_user {
     use super::*;
 
     #[test]
-    fn test_create_a_user() {
+    fn assign_the_fields() {
         let user = User::new("John".to_string(), 1, 1);
 
         assert_eq!(user.name, "John".to_string());
@@ -162,8 +162,8 @@ mod tests_user {
         assert_eq!(user.balance, 1);
     }
 
-        #[test]
-    fn test_equality() {
+    #[test]
+    fn equality_of_the_object_includes_equality_of_all_fields() {
         let user1 = User::new("John".to_string(), 1, 1);
         let user2 = User::new("John".to_string(), 1, 1);
 
@@ -176,7 +176,7 @@ mod tests_bank {
     use super::*;
 
     #[test]
-    fn test_create_a_bank() {
+    fn assign_the_fields() {
         let user1 = User::new("John".to_string(), 1, 1);
         let bank = Bank::new(vec![user1], "First Bank".to_string(), 1, 4);
 
@@ -188,7 +188,7 @@ mod tests_bank {
     }
 
     #[test]
-    fn test_equality_for_bank() {
+    fn equality_of_the_object_includes_equality_of_all_fields() {
         let user1 = User::new("John".to_string(), 1, 1);
         let user2 = User::new("John".to_string(), 1, 1);
         let bank = Bank::new(vec![user1], "First Bank".to_string(), 1, 4);
