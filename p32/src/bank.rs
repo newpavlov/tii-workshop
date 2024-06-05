@@ -133,9 +133,17 @@ impl Bank {
 
     pub(crate) fn accrue_interest(&mut self) -> bool {
         for mut user in self.users.iter_mut() {
-            let debit_interest = ((user.balance as u64 * self.debit_interest ) / 100) as i64;
-            let new_balance = user.balance + debit_interest;
-            user.set_balance(new_balance);
+            {
+                let debit_interest = ((user.balance as u64 * self.debit_interest) / 100) as i64;
+                let new_balance = user.balance + debit_interest;
+                user.set_balance(new_balance);
+            }
+
+            {
+                let credit_interest = ((user.credit_line * self.credit_interest) / 100);
+                let new_credit_line = user.credit_line + credit_interest;
+                user.credit_line = new_credit_line;
+            }
         }
         true
     }
@@ -245,7 +253,7 @@ mod tests_bank {
     }
 
     #[test]
-    fn bank_accrue_interest() {
+    fn bank_accrue_interest_for_debits() {
         let user1 = User::new("user1".to_string(), 0, 100);
         let mut bank = Bank::new(vec![user1], "First Bank".to_string(), 1, 4);
 
@@ -253,5 +261,16 @@ mod tests_bank {
 
         assert_eq!(result, true);
         assert_eq!(bank.get_user_by_id("user1".to_string()).unwrap().balance, 104);
+    }
+
+    #[test]
+    fn bank_accrue_interest_for_credits() {
+        let user1 = User::new("user1".to_string(), 100, 0);
+        let mut bank = Bank::new(vec![user1], "First Bank".to_string(), 1, 4);
+
+        let result = bank.accrue_interest();
+
+        assert_eq!(result, true);
+        assert_eq!(bank.get_user_by_id("user1".to_string()).unwrap().credit_line, 101);
     }
 }
