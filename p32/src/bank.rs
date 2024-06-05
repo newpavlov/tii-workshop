@@ -131,7 +131,7 @@ impl Bank {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests_user {
     use super::*;
 
     #[test]
@@ -142,6 +142,11 @@ mod tests {
         assert_eq!(user.credit_line, 1);
         assert_eq!(user.balance, 1);
     }
+}
+
+#[cfg(test)]
+mod tests_bank {
+    use super::*;
 
     #[test]
     fn test_create_a_bank() {
