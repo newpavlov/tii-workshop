@@ -15,7 +15,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
+    fn loop_from_celsius() {
         assert_eq!(farenheit2celsius(celsius2farenheit(2)), 2);
+    }
+
+    #[test]
+    fn loop_from_farenheit() {
+        assert_eq!(celsius2farenheit(farenheit2celsius(2)), 2);
     }
 }
