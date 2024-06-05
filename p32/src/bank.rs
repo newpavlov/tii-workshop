@@ -49,6 +49,8 @@ pub struct Bank {
     debit_interest: u64,
 }
 
+impl Bank {}
+
 pub struct BalanceSheet {
     liabilities: u64,
     assets: i64,
@@ -126,6 +128,15 @@ impl Bank {
         // self.users[first_user_index.unwrap()]
         // second_user.map(|mut user| user.set_balance(user.get_balance()));
 
+        true
+    }
+
+    pub(crate) fn accrue_interest(&mut self) -> bool {
+        for mut user in self.users.iter_mut() {
+            let debit_interest = ((user.balance as u64 * self.debit_interest ) / 100) as i64;
+            let new_balance = user.balance + debit_interest;
+            user.set_balance(new_balance);
+        }
         true
     }
 }
@@ -231,5 +242,16 @@ mod tests_bank {
 
         assert_eq!(result, false);
         assert_eq!(bank.get_user_by_id("user2".to_string()).unwrap().balance, 1);
+    }
+
+    #[test]
+    fn bank_accrue_interest() {
+        let user1 = User::new("user1".to_string(), 0, 100);
+        let mut bank = Bank::new(vec![user1], "First Bank".to_string(), 1, 4);
+
+        let result = bank.accrue_interest();
+
+        assert_eq!(result, true);
+        assert_eq!(bank.get_user_by_id("user1".to_string()).unwrap().balance, 104);
     }
 }
