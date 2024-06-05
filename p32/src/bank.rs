@@ -18,6 +18,7 @@ pub struct Bank {
 }
 
 impl Bank {
+    // type of users?
     pub fn new(users: Vec<User>, name: String, credit_interest: u64, debit_interest: u64) -> Self {
         Self { users, name, credit_interest, debit_interest }
     }
