@@ -5,12 +5,12 @@ pub struct User {
     balance: i64,
 }
 
-trait Balanceable {
+trait BalanceAccessor {
     fn get_balance(&self) -> i64;
     fn set_balance(&mut self, value: i64);
 }
 
-impl Balanceable for User {
+impl BalanceAccessor for User {
     fn get_balance(&self) -> i64 {
         self.balance
     }
