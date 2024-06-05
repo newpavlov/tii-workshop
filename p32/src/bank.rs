@@ -161,6 +161,14 @@ mod tests_user {
         assert_eq!(user.credit_line, 1);
         assert_eq!(user.balance, 1);
     }
+
+        #[test]
+    fn test_equality() {
+        let user1 = User::new("John".to_string(), 1, 1);
+        let user2 = User::new("John".to_string(), 1, 1);
+
+        assert_eq!(user1, user2);
+    }
 }
 
 #[cfg(test)]
